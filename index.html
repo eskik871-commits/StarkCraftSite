@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StarkCraft Sunucusu</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Press Start 2P',cursive;background:#0d0d0d;color:#f0f0f0;}
+    nav{position:fixed;top:0;width:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;padding:15px;z-index:999;}
+    nav a{color:#00ff99;margin:0 15px;text-decoration:none;transition:0.3s;}
+    nav a:hover{color:#fff;}
+    header{background:#111 url('https://wallpapercave.com/wp/wp2553946.jpg') center/cover;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+    header h1{font-size:3rem;text-shadow:2px 2px 8px #00ff99;color:#fff;}
+    header p{margin-top:20px;font-size:1rem;color:#ccc;}
+    section{padding:80px 20px;max-width:1000px;margin:auto;}
+    section h2{font-size:1.5rem;margin-bottom:20px;border-bottom:2px solid #00ff99;display:inline-block;padding-bottom:5px;}
+    .card{background:#1a1a1a;padding:20px;border-radius:10px;margin:15px 0;box-shadow:0 0 15px rgba(0,255,153,0.2);}
+    footer{text-align:center;padding:30px;background:#000;color:#666;}
+    .btn{display:inline-block;margin-top:20px;padding:10px 20px;background:#00ff99;color:#000;text-decoration:none;border-radius:5px;transition:0.3s;}
+    .btn:hover{background:#fff;color:#000;}
+    input{padding:10px;width:80%;margin:5px 0;border-radius:5px;border:none;}
+    button{cursor:pointer;}
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "SENIN_API_KEY",
+      authDomain: "SENIN_PROJECT.firebaseapp.com",
+      projectId: "SENIN_PROJECT_ID",
+      storageBucket: "SENIN_PROJECT.appspot.com",
+      messagingSenderId: "XXXX",
+      appId: "XXXX"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+  <nav>
+    <a href="#home">Ana Sayfa</a>
+    <a href="#rules">Kurallar</a>
+    <a href="#plugins">Eklentiler</a>
+    <a href="#team">Ekibimiz</a>
+    <a href="#contact">İletişim</a>
+    <a href="#login">Giriş/Kayıt</a>
+  </nav>
+
+  <header id="home">
+    <h1>StarkCraft</h1>
+    <p>Hayatta kal, inşa et, keşfet!<br>IP: play.starkcraft.net</p>
+    <a href="#contact" class="btn">Katıl</a>
+  </header>
+
+  <section id="rules">
+    <h2>Kurallar</h2>
+    <div class="card">
+      <ul>
+        <li>1. Küfür ve hakaret yasaktır.</li>
+        <li>2. Hile kullanmak yasaktır.</li>
+        <li>3. Diğer oyunculara saygılı olun.</li>
+        <li>4. Reklam yapmak yasaktır.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="plugins">
+    <h2>Eklentiler</h2>
+    <div class="card">
+      <p>Sunucuda kullanılan başlıca eklentiler:</p>
+      <ul>
+        <li>EssentialsX</li>
+        <li>WorldEdit</li>
+        <li>LuckPerms</li>
+        <li>CoreProtect</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="team">
+    <h2>Ekibimiz</h2>
+    <div class="card">
+      <p>Sunucu yönetimi:</p>
+      <ul>
+        <li>Admin: Mr. Stark</li>
+        <li>Moderator: JaneDoe</li>
+        <li>Helper: Player123</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>İletişim & Sunucu Durumu</h2>
+    <div class="card" id="status">Sunucu durumu yükleniyor...</div>
+    <script>
+      async function getStatus() {
+        try {
+          let res = await fetch("https://api.mcsrvstat.us/2/play.starkcraft.net");
+          let data = await res.json();
+          if(data.online){
+            document.getElementById("status").innerHTML = "✅ Sunucu açık! Online: " + data.players.online + "/" + data.players.max;
+          } else {
+            document.getElementById("status").innerHTML = "❌ Sunucu kapalı.";
+          }
+        } catch {
+          document.getElementById("status").innerHTML = "⚠️ Durum alınamadı.";
+        }
+      }
+      getStatus();
+    </script>
+  </section>
+
+  <section id="login">
+    <h2>Kayıt / Giriş</h2>
+    <div class="card">
+      <input id="email" type="email" placeholder="E-posta" required><br>
+      <input id="password" type="password" placeholder="Şifre" required><br>
+      <button id="signup" class="btn">Kayıt Ol</button>
+      <button id="signin" class="btn">Giriş Yap</button>
+      <p id="login-status"></p>
+    </div>
+    <script>
+      const auth = firebase.auth();
+
+      document.getElementById('signup').onclick = () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        auth.createUserWithEmailAndPassword(email, password)
+          .then(userCredential => {
+            document.getElementById('login-status').innerText = '✅ Kayıt başarılı!';
+          })
+          .catch(error => {
+            document.getElementById('login-status').innerText = '❌ ' + error.message;
+          });
+      };
+
+      document.getElementById('signin').onclick = () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        auth.signInWithEmailAndPassword(email, password)
+          .then(userCredential => {
+            document.getElementById('login-status').innerText = '✅ Giriş başarılı!';
+          })
+          .catch(error => {
+            document.getElementById('login-status').innerText = '❌ ' + error.message;
+          });
+      };
+
+      auth.onAuthStateChanged(user => {
+        if(user) {
+          document.getElementById('login-status').innerText = 'Hoşgeldin, ' + user.email;
+        }
+      });
+    </script>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 StarkCraft. Tüm hakları saklıdır.</p>
+  </footer>
+</body>
+</html>
